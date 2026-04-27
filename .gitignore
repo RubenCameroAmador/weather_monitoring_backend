@@ -1,0 +1,73 @@
+# ======================
+# 🐍 Python
+# ======================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyd
+*.pyc
+
+# ======================
+# 🌱 Entornos virtuales
+# ======================
+.venv/
+venv/
+env/
+ENV/
+
+# ======================
+# 🔐 Variables de entorno
+# ======================
+.env
+.env.docker
+.env.local
+.env.production
+
+# ======================
+# 🧪 Testing / coverage
+# ======================
+.pytest_cache/
+.coverage
+htmlcov/
+.coverage.*
+*.cover
+
+# ======================
+# 🗄️ Base de datos local
+# ======================
+*.sqlite3
+*.db
+
+# ======================
+# 📦 Dependencias build
+# ======================
+pip-wheel-metadata/
+dist/
+build/
+*.egg-info/
+
+# ======================
+# 🪵 Logs
+# ======================
+*.log
+logs/
+
+# ======================
+# 🐳 Docker
+# ======================
+*.pid
+
+# ======================
+# 💻 Sistema operativo
+# ======================
+.DS_Store
+Thumbs.db
+
+# ======================
+# 🧠 IDEs
+# ======================
+.vscode/
+.idea/
+*.swp
+*.swo
