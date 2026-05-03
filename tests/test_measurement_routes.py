@@ -5,35 +5,35 @@ def test_ping(client):
     assert response.json["message"] == "pong"
 
 
-def test_create_measurement(client):
+def test_create_measurement(client, auth_headers):
     data = {
         "temperature": 25.0,
         "humidity": 60
     }
 
-    response = client.post("/api/measurements", json=data)
+    response = client.post("/api/measurements", json=data, headers=auth_headers)
 
     assert response.status_code == 201
     assert "id" in response.json
 
 
-def test_invalid_measurement(client):
-    response = client.post("/api/measurements", json={})
+def test_invalid_measurement(client, auth_headers):
+    response = client.post("/api/measurements", json={}, headers=auth_headers)
 
     assert response.status_code == 400
 
-def test_get_latest_measurements(client):
+def test_get_latest_measurements(client, auth_headers):
     client.post("/api/measurements", json={
         "temperature": 25.5,
         "humidity": 60
-    })
+    }, headers=auth_headers)
 
     client.post("/api/measurements", json={
         "temperature": 26.0,
         "humidity": 65
-    })
+    }, headers=auth_headers)
 
-    response = client.get("/api/measurements/latest")
+    response = client.get("/api/measurements/latest", headers=auth_headers)
 
     assert response.status_code == 200
 
