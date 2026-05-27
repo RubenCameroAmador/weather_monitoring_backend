@@ -1,0 +1,15 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "weather-station-local": {
+      "type": "local",
+      "command": [".venv/bin/python3", "-m", "app.mcp.server"],
+      "enabled": false
+    },
+    "weather-station-docker": {
+      "type": "sse",
+      "url": "http://localhost:8000/sse",
+      "enabled": true
+    }
+  }
+}

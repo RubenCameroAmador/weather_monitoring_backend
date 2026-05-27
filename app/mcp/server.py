@@ -27,6 +27,12 @@ register_alert_tools(mcp)
 register_sensor_tools(mcp)
 
 if __name__ == "__main__":
+    import sys
+
+    transport = sys.argv[1] if len(sys.argv) > 1 else "stdio"
 
     with flask_app.app_context():
-        mcp.run()
+        if transport == "sse":
+            mcp.run(transport="sse", host="0.0.0.0", port=8000)
+        else:
+            mcp.run()

@@ -36,5 +36,18 @@ services:
     volumes:
       - .:/app
 
+  mcp:
+    build: .
+    container_name: weather_mcp
+    command: python -m app.mcp.server sse
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env.docker
+    ports:
+      - "8000:8000"
+
 volumes:
   postgres_data:
