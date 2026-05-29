@@ -8,7 +8,7 @@
     },
     "weather-station-docker": {
       "type": "sse",
-      "url": "http://localhost:8000/sse",
+      "url": "http://13.223.175.101:8000/sse",
       "enabled": true
     }
   }

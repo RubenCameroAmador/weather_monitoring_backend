@@ -19,6 +19,7 @@ It receives sensor data (Arduino + DHT22), stores it in a database, and exposes 
 
 # 📦 Project Structure
 
+```
 weather_api/
 │
 ├── app/
@@ -28,12 +29,12 @@ weather_api/
 │   ├── schemas/
 │   ├── mcp/
 │   │   ├── __init__.py
-│   │   ├── server.py              # FastMCP entry point
+│   │   ├── server.py
 │   │   └── tools/
-│   │       ├── measurements.py    # latest_measurements
-│   │       ├── statistics.py      # daily averages
-│   │       ├── alerts.py          # extreme temperature alerts
-│   │       └── sensors.py         # sensor_status
+│   │       ├── measurements.py
+│   │       ├── statistics.py
+│   │       ├── alerts.py
+│   │       └── sensors.py
 │   ├── extensions.py
 │   ├── config.py
 │   └── __init__.py
@@ -46,10 +47,11 @@ weather_api/
 ├── entrypoint.sh
 ├── run.py
 ├── requirements.txt
-├── opencode.json                   # OpenCode MCP client config
+├── opencode.json
 ├── AGENTS.md
 ├── .env.example
 └── README.md
+```
 
 ---
 
@@ -264,18 +266,6 @@ flask db upgrade   # apply changes
 
 ---
 
-# ⚠️ Important Notes
-
-- Do NOT commit `.env` or `.env.docker`
-- Use `.env.example` as reference
-- Do NOT run `flask db init` in production
-- Use `entrypoint.sh` for automatic startup in Docker
-- JWT is required on `POST /api/measurements` and `GET /api/measurements/latest`
-- Database host port maps `5433` → container `5432` (non-standard)
-- MCP server exposes `8000` with **no authentication** — secure in production
-
----
-
 # 🚀 Future Improvements
 
 - WebSockets real-time dashboard  
@@ -289,4 +279,5 @@ flask db upgrade   # apply changes
 
 # 👨‍💻 Author
 
+Rubén Camero
 Weather IoT system built with Flask + Arduino + PostgreSQL + MCP
