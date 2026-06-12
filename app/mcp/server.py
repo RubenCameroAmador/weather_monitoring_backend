@@ -32,7 +32,7 @@ if __name__ == "__main__":
     transport = sys.argv[1] if len(sys.argv) > 1 else "stdio"
 
     with flask_app.app_context():
-        if transport == "sse":
-            mcp.run(transport="sse", host="0.0.0.0", port=8000)
+        if transport in ("sse", "streamable-http"):
+            mcp.run(transport=transport, host="0.0.0.0", port=8000)
         else:
             mcp.run()

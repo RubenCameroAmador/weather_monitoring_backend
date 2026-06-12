@@ -39,7 +39,7 @@ services:
   mcp:
     build: .
     container_name: weather_mcp
-    command: python -m app.mcp.server sse
+    command: python -m app.mcp.server streamable-http
     restart: always
     depends_on:
       db:

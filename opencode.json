@@ -4,12 +4,12 @@
     "weather-station-local": {
       "type": "local",
       "command": [".venv/bin/python3", "-m", "app.mcp.server"],
-      "enabled": false
+      "enabled": true
     },
     "weather-station-docker": {
       "type": "sse",
-      "url": "http://13.223.175.101:8000/sse",
-      "enabled": true
+      "url": "http://http://3.238.8.222:8000/sse",
+      "enabled": false
     }
   }
 }

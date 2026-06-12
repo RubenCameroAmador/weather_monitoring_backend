@@ -12,7 +12,7 @@ It receives sensor data (Arduino + DHT22), stores it in a database, and exposes 
 - SQLAlchemy → ORM  
 - Flask-Migrate (Alembic) → Database migrations  
 - Docker & Docker Compose → Containerized environment (3 services)  
-- MCP Server (FastMCP) → AI-agent interface via SSE or stdio  
+- MCP Server (FastMCP) → AI-agent interface via stdio, SSE, or Streamable HTTP  
 - Arduino / IoT device → Data producer (temperature & humidity)
 
 ---
@@ -85,11 +85,11 @@ docker compose ps
 ```
 
 ## Services
-| Service | Port  | Description        |
-|---------|-------|--------------------|
-| web     | 5000  | Flask REST API     |
-| mcp     | 8000  | MCP server (SSE)   |
-| db      | 5432  | PostgreSQL 15      |
+| Service | Port  | Description                 |
+|---------|-------|-----------------------------|
+| web     | 5000  | Flask REST API              |
+| mcp     | 8000  | MCP server (Streamable HTTP)|
+| db      | 5432  | PostgreSQL 15               |
 
 ---
 
@@ -170,15 +170,20 @@ The project includes an **MCP (Model Context Protocol)** server built with [Fast
 
 ## Run MCP Server
 
-### Via Docker (SSE mode — port 8000)
+### Via Docker (Streamable HTTP — port 8000)
 Already included in `docker compose up --build`. The `mcp` service runs automatically.
 
-### Via CLI (stdio mode)
+### Via CLI (stdio mode — for local MCP clients)
 ```bash
 python -m app.mcp.server
 ```
 
-### Via CLI (SSE mode)
+### Via CLI (Streamable HTTP mode — standalone server)
+```bash
+python -m app.mcp.server streamable-http
+```
+
+### Via CLI (SSE mode — legacy)
 ```bash
 python -m app.mcp.server sse
 ```
@@ -195,28 +200,39 @@ python -m app.mcp.server sse
 
 ## Connect from an MCP Client
 
-### Local (SSE)
-Configure your MCP client (e.g., `opencode.json`):
+### Local (Streamable HTTP — recommended)
 ```json
 {
   "mcp": {
     "weather-station": {
-      "type": "sse",
-      "url": "http://localhost:8000/sse",
+      "type": "streamable-http",
+      "url": "http://localhost:8000/mcp",
       "enabled": true
     }
   }
 }
 ```
 
-### Remote (SSE)
-Replace `localhost` with your server's IP:
+### Remote (Streamable HTTP)
 ```json
 {
   "mcp": {
     "weather-station-remote": {
+      "type": "streamable-http",
+      "url": "http://<server-ip>:8000/mcp",
+      "enabled": true
+    }
+  }
+}
+```
+
+### Local (SSE — legacy)
+```json
+{
+  "mcp": {
+    "weather-station": {
       "type": "sse",
-      "url": "http://<server-ip>:8000/sse",
+      "url": "http://localhost:8000/sse",
       "enabled": true
     }
   }
@@ -258,11 +274,11 @@ flask db upgrade   # apply changes
 
 # 🐳 Docker Services
 
-| Service | Image                        | Command                              |
-|---------|------------------------------|--------------------------------------|
-| web     | weather_monitoring_backend-web | `flask run --host=0.0.0.0`         |
-| mcp     | weather_monitoring_backend-mcp | `python -m app.mcp.server sse`     |
-| db      | postgres:15                    | `postgres`                          |
+| Service | Image                        | Command                                     |
+|---------|------------------------------|---------------------------------------------|
+| web     | weather_monitoring_backend-web | `flask run --host=0.0.0.0`                |
+| mcp     | weather_monitoring_backend-mcp | `python -m app.mcp.server streamable-http` |
+| db      | postgres:15                    | `postgres`                                 |
 
 ---
 
