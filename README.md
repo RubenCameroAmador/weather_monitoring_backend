@@ -128,16 +128,39 @@ flask run
 
 # 📡 REST API Endpoints
 
-## Health Check
+## Auth — Login
 ```
-GET /api/ping
+POST /api/login
+```
+Body:
+```json
+{
+  "username": "admin",
+  "password": "your-password"
+}
 ```
 Response:
 ```json
 {
-  "message": "pong"
+  "access_token": "eyJ...",
+  "refresh_token": "eyJ..."
 }
 ```
+
+---
+
+## Auth — Refresh Token
+```
+POST /api/refresh
+Authorization: Bearer <refresh_token>
+```
+Response:
+```json
+{
+  "access_token": "eyJ..."
+}
+```
+The refresh endpoint accepts a valid refresh token and returns a new short-lived access token (1h). Refresh tokens expire after 30 days.
 
 ---
 

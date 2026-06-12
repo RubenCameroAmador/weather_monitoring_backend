@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 import os
+from datetime import timedelta
 
 from .config import Config
 from .extensions import (
@@ -28,6 +29,7 @@ def create_app(test_config=None):
         )
 
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 3600
+    app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 
     # Init extensions
     db.init_app(app)
