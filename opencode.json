@@ -8,7 +8,17 @@
     },
     "weather-station-docker": {
       "type": "sse",
-      "url": "http://http://3.238.8.222:8000/sse",
+      "url": "http://3.238.8.222:8000/sse",
+      "enabled": false
+    },
+    "weather-station-external": {
+      "type": "streamHttp",
+      "url": "http://localhost/mcp",
+      "enabled": true
+    },
+    "weather-station-nginx": {
+      "type": "streamHttp",
+      "url": "http://localhost/mcp",
       "enabled": false
     }
   }

@@ -11,8 +11,9 @@ It receives sensor data (Arduino + DHT22), stores it in a database, and exposes 
 - PostgreSQL → Time-series data storage  
 - SQLAlchemy → ORM  
 - Flask-Migrate (Alembic) → Database migrations  
-- Docker & Docker Compose → Containerized environment (3 services)  
+- Docker & Docker Compose → Containerized environment (4 services)  
 - MCP Server (FastMCP) → AI-agent interface via stdio, SSE, or Streamable HTTP  
+- **Nginx** → Reverse proxy (single entry point, routes `/api/` → Flask, `/mcp` → MCP)  
 - Arduino / IoT device → Data producer (temperature & humidity)
 
 ---
@@ -42,6 +43,8 @@ weather_api/
 ├── migrations/
 ├── tests/
 │
+├── nginx/
+│   └── nginx.conf
 ├── docker-compose.yml
 ├── Dockerfile
 ├── entrypoint.sh
@@ -85,11 +88,16 @@ docker compose ps
 ```
 
 ## Services
-| Service | Port  | Description                 |
-|---------|-------|-----------------------------|
-| web     | 5000  | Flask REST API              |
-| mcp     | 8000  | MCP server (Streamable HTTP)|
-| db      | 5432  | PostgreSQL 15               |
+| Service | Port (host) | Description                     |
+|---------|-------------|---------------------------------|
+| nginx   | 80          | Reverse proxy (single entry)    |
+| web     | —           | Flask REST API (internal only)  |
+| mcp     | —           | MCP server — Streamable HTTP (internal only) |
+| db      | 5433        | PostgreSQL 15                   |
+
+> **Note:** `web` and `mcp` only expose ports internally. All external traffic goes through **nginx** (`:80`).
+>
+> Routes: `http://localhost/api/*` → Flask | `http://localhost/mcp` → MCP server
 
 ---
 
@@ -193,8 +201,8 @@ The project includes an **MCP (Model Context Protocol)** server built with [Fast
 
 ## Run MCP Server
 
-### Via Docker (Streamable HTTP — port 8000)
-Already included in `docker compose up --build`. The `mcp` service runs automatically.
+### Via Docker (Streamable HTTP — through nginx on port 80)
+Already included in `docker compose up --build`. The `mcp` service runs automatically behind nginx at `http://localhost/mcp`.
 
 ### Via CLI (stdio mode — for local MCP clients)
 ```bash
@@ -223,39 +231,26 @@ python -m app.mcp.server sse
 
 ## Connect from an MCP Client
 
-### Local (Streamable HTTP — recommended)
+### Local (through nginx — recommended)
 ```json
 {
   "mcp": {
     "weather-station": {
       "type": "streamable-http",
-      "url": "http://localhost:8000/mcp",
+      "url": "http://localhost/mcp",
       "enabled": true
     }
   }
 }
 ```
 
-### Remote (Streamable HTTP)
+### Remote (through nginx)
 ```json
 {
   "mcp": {
     "weather-station-remote": {
       "type": "streamable-http",
-      "url": "http://<server-ip>:8000/mcp",
-      "enabled": true
-    }
-  }
-}
-```
-
-### Local (SSE — legacy)
-```json
-{
-  "mcp": {
-    "weather-station": {
-      "type": "sse",
-      "url": "http://localhost:8000/sse",
+      "url": "http://<server-ip>/mcp",
       "enabled": true
     }
   }
@@ -297,10 +292,11 @@ flask db upgrade   # apply changes
 
 # 🐳 Docker Services
 
-| Service | Image                        | Command                                     |
+| Service | Image / Source               | Command / Notes                             |
 |---------|------------------------------|---------------------------------------------|
-| web     | weather_monitoring_backend-web | `flask run --host=0.0.0.0`                |
-| mcp     | weather_monitoring_backend-mcp | `python -m app.mcp.server streamable-http` |
+| nginx   | nginx:alpine                  | reverse proxy — routes `/api/` and `/mcp`  |
+| web     | weather_monitoring_backend-web | `flask run --host=0.0.0.0` (internal only)|
+| mcp     | weather_monitoring_backend-mcp | `python -m app.mcp.server streamable-http` (internal only) |
 | db      | postgres:15                    | `postgres`                                 |
 
 ---
