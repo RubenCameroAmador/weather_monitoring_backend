@@ -8,7 +8,8 @@ from .extensions import (
     db,
     migrate,
     bcrypt,
-    jwt
+    jwt,
+    socketio
 )
 
 def create_app(test_config=None):
@@ -36,6 +37,14 @@ def create_app(test_config=None):
     migrate.init_app(app, db)
     bcrypt.init_app(app)
     jwt.init_app(app)
+    socketio.init_app(
+        app,
+        cors_allowed_origins="*",
+        async_mode=app.config.get("SOCKETIO_ASYNC_MODE", None)
+    )
+
+    # Socket handlers (must be imported after socketio.init_app)
+    from .socket import handlers  # noqa: F401
 
     # Blueprints
     from .routes.measurement_routes import measurement_bp

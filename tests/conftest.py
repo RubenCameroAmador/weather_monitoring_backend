@@ -25,6 +25,7 @@ def app():
 def client(app):
     return app.test_client()
 
+
 @pytest.fixture
 def auth_headers(app):
     with app.app_context():
@@ -32,3 +33,13 @@ def auth_headers(app):
     return {
         "Authorization": f"Bearer {token}"
     }
+
+
+@pytest.fixture
+def socketio_client(app):
+    from app.extensions import socketio
+    with app.app_context():
+        token = create_access_token(identity="test_user")
+    client = socketio.test_client(app, auth={"token": token})
+    yield client
+    client.disconnect()

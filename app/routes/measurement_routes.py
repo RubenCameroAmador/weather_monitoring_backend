@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from app.extensions import socketio
 from app.services.measurement_service import (
     create_measurement,
     get_latest_measurements
@@ -19,6 +20,14 @@ def add_measurement():
         return jsonify({"error": "Invalid data"}), 400
 
     measurement = create_measurement(data)
+
+    socketio.emit("new_measurement", {
+        "id": measurement.id,
+        "temperature": measurement.temperature,
+        "humidity": measurement.humidity,
+        "device_id": measurement.device_id,
+        "created_at": measurement.created_at.isoformat()
+    })
 
     return jsonify({
         "id": measurement.id,

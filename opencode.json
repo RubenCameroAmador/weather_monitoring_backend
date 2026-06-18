@@ -6,20 +6,10 @@
       "command": [".venv/bin/python3", "-m", "app.mcp.server"],
       "enabled": true
     },
-    "weather-station-docker": {
-      "type": "sse",
-      "url": "http://3.238.8.222:8000/sse",
-      "enabled": false
-    },
-    "weather-station-external": {
+    "weather-station-aws": {
       "type": "streamHttp",
-      "url": "http://localhost/mcp",
+      "url": "http://13.220.175.207/mcp",
       "enabled": true
-    },
-    "weather-station-nginx": {
-      "type": "streamHttp",
-      "url": "http://localhost/mcp",
-      "enabled": false
     }
   }
 }
